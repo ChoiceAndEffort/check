@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>节流</title>
+</head>
+
+<body>
+  <input type="text" oninput="handleInput()">
+  <script>
+    let throttleAdd = throttle(add, 1000)
+    function handleInput(params) {
+      throttleAdd()
+    }
+    function add(params) {
+      console.log(888)
+    }
+    function throttle(func, time) {
+      let timer;
+      return function () {
+        var _this = this;
+        var arg = arguments;
+        if (!timer) {
+          timer = setTimeout(function () {
+            func.apply(_this, arg);
+            timer = null;  //timer只是变量，直接赋值为null并不能停止计时器
+          }, time);
+        }
+      }
+    }
+
+  </script>
+</body>
+
+</html>

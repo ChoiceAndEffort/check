@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>希尔排序
+
+  </title>
+</head>
+
+<body>
+  <script>
+    // 选择一个增量序列 t1，t2，……，tk，其中 ti > tj, tk = 1；
+    // 按增量序列个数 k，对序列进行 k 趟排序；
+    // 每趟排序，根据对应的增量 ti，将待排序列分割成若干长度为 m 的子序列，分别对各子表进行直接插入排序。仅增量因子为 1 时，整个序列作为一个表来处理，表长度即为整个序列的长度
+    function shellSort(arr) {
+      var len = arr.length,
+        temp,
+        gap = 1;
+      // 动态定义间隔序列，也可以手动定义，如 gap = 5；
+      while (gap < len / 5) {
+        gap = gap * 5 + 1;
+      }
+      for (gap; gap > 0; gap = Math.floor(gap / 5)) {
+        for (var i = gap; i < len; i++) {
+          temp = arr[i];
+          for (var j = i - gap; j >= 0 && arr[j] > temp; j -= gap) {
+            arr[j + gap] = arr[j];
+          }
+          arr[j + gap] = temp;
+        }
+      }
+      return arr;
+    }
+    let myArr = [20, 18, 27, 19, 35];
+    console.log(shellSort(myArr))// [18, 19, 20, 27, 35]
+  </script>
+</body>
+
+</html>

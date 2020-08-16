@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>防抖</title>
+</head>
+
+<body>
+  <button id="btn">88999</button>
+  <script>
+    let btn = document.getElementById("#btn")
+    window.addEventListener('click', debounce(add,500,false))
+    function add() {
+        console.log(88)
+    }
+    function debounce(fun, wait, immediate) {
+      //该函数三个参数，第一个参数fun为回调函数，time为等待的时间，flag为ture表示先运行回调函数在等待，反之先等待在运行
+      let timer;
+      return function () {
+        let that = this;
+        clearTimeout(timer);
+        if (immediate) {
+          if (!timer)fun.apply(that, arguments)
+          timer = setTimeout(function () {
+            timer = null;
+          }, wait)
+        } else {
+          timer = setTimeout(function () {
+            fun.apply(that, arguments)
+          }, wait);
+        }
+      }
+    }
+  </script>
+</body>
+
+</html>

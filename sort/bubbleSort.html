@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>冒泡排序</title>
+</head>
+
+<body>
+  <script>
+    function sort(arr) {
+      let length = arr.length;
+      let flag = false//当目标对象是已经排序好的数据 也需要进行多次遍历,定义个flag来优化下,
+      //定义一个布尔值 在遍历每一次的时候，如果发生位置交换，就改变布尔值 当这一次循环结束之后，判断该布尔值是否变化 变化了则继续下一次，没变则退出
+      for (let i = 0; i < length - 1; i++) {
+        //循环数组
+        for (let j = 0; j < length - i - 1; j++) {
+          //比较两个数组的次数,比如比较第一次后,最小的放在第一位后,后边第二次比较的收,第一位就不会在去比较了,因为他已经是最小的了]
+          //每轮比较次数，次数=长度-1-此时的轮数
+          if (arr[j] > arr[j + 1]) {
+            // 这个地方用到是交换两个元素的值
+            // 还可以使用解构赋值进行交换:[arr[j] , arr[j + 1]]=[ arr[j + 1],arr[j]]
+            let temp = arr[j];
+            arr[j] = arr[j + 1]
+            arr[j + 1] = temp;
+            flag = true;
+          }
+        }
+        console.log(`第 ${i + 1} 次排序`)
+        if (!flag) break;
+      }
+      return arr;
+    }
+    let myArr = [20, 18, 27, 19, 35];
+    console.log(sort(myArr))// [18, 19, 20, 27, 35]
+  </script>
+
+</body>
+
+</html>

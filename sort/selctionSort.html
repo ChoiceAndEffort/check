@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>选择排序</title>
+</head>
+
+<body>
+  <script>
+    function selectSort(arr) {
+      let length = arr.length;
+      for (let i = 0; i < length - 1; i++) {
+        let minIndex = i;
+        for (let j = i + 1; j < length; j++) {
+          minIndex = arr[j] < arr[minIndex] ? j : minIndex;
+        }
+        console.log(`第${i + 1}次循环`)
+        if (minIndex === i) break
+        [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]]
+      }
+      return arr;
+    }
+    let myArr = [20, 18, 27, 19, 35];
+    console.log(selectSort(myArr))// [18, 19, 20, 27, 35]
+
+
+
+
+  </script>
+
+</body>
+
+</html>

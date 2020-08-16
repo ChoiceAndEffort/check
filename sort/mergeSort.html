@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>归并排序</title>
+</head>
+
+<body>
+  <script>
+    // （1） 把长度为n的输入序列分成两个长度为n/2的子序列；
+    // （2）对这两个子序列分别采用归并排序；
+    // （3） 将两个排序好的子序列合并成一个最终的排序序列。
+    function mergeSort(arr) {  //采用自上而下的递归方法
+      let len = arr.length;
+      if (len < 2) return arr;
+      let middle = Math.floor(len / 2),
+        left = arr.slice(0, middle),
+        right = arr.slice(middle);
+      return merge(mergeSort(left), mergeSort(right));
+    }
+
+    function merge(left, right) {
+      let result = [];
+      while (left.length && right.length) {
+        // 不断比较left和right数组的第一项，小的取出存入res
+        left[0] < right[0] ? result.push(left.shift()) : result.push(right.shift());
+      }
+      return result.concat(left, right);
+    }
+    let myArr = [20, 18, 27, 19, 35];
+    console.log(mergeSort(myArr))// [18, 19, 20, 27, 35]
+  </script>
+</body>
+
+</html>

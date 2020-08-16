@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>发布订阅</title>
+</head>
+
+<body>
+  <script>
+    class Event {
+      constructor() {
+        //存放订阅事件的对象
+        this.eventObj = {}
+      }
+      //对象中是否有该订阅的key
+      isHaveKey(type) {
+        return this.eventObj.hasOwnProperty(type)
+      }
+      // 订阅函数
+      on(type, handler) {
+        if (!this.isHaveKey(type)) {
+          //如果没有该订阅事件,创建一个订阅事件的数组
+          this.eventObj[type] = []
+        }
+        //如果有订阅事件,在订阅事件中放置订阅函数
+        this.eventObj[type].push(handler)
+      }
+      // 发布函数
+      emit(type, data) {
+        if (!this.isHaveKey(type)) {
+          throw Error('未添加该订阅事件')
+        }
+        this.eventObj[type].forEach((handler) => {
+          handler(...data)
+        });
+      }
+      //取消订阅
+      remove(type, handler) {
+        if (!this.isHaveKey(type)) {
+          console.log('remove', '无该类型的订阅者')
+          return false;
+        }
+        if (!handler) {//如果没有指定移除哪个订阅者,则清除所有的订阅者
+          this.eventObj[type] = []
+          return false;
+        }
+         // 这个地方可能存在多个相同的函数,所以使用foreach遍历清除
+        this.eventObj[type].forEach((cd,index)=>{
+            if(cd===handler){
+              this.eventObj[type].splice(index, 1)
+            }
+        })
+      }
+
+    }
+    let event1 = new Event()
+
+    function sayName(params) {
+      console.log(`我的名字${params}`)
+    }
+    function age(params) {
+      console.log(`我的年龄${params}`)
+    }
+    event1.on('name', sayName)
+    event1.on('age', age)
+    event1.remove('name',sayName)
+    event1.emit('name', ['磊哥'])
+    event1.emit('age', [18])
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    function ajax(obj) {
+      //兼容（IE5 和 IE6）使用 ActiveX 对象：
+      let xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP")
+      let { method, url, data } = obj
+      let timeStamp = Date.now()
+      method = method.toLowerCase();
+      url = `${url}?timeStamp=${timeStamp}`
+      if (method === 'get') {
+        url = Object.keys(data).length ? `${url}&${formateData(data)}` : url
+        xhr.open(method, url, true)
+        xhr.send()
+      } else {//post请求
+        xhr.open(method, url, true)
+        //这个地方设置的formData形式的数据
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        let sendData = Object.keys(data).length ? formateData(data) : null
+        //也可以设置json格式的数据
+        //  xhr.setRequestHeader("Content-Type", "application/json");
+        //  let sendData = Object.keys(data).length ? JSON.stringify(data)  : null
+        xhr.send(sendData)
+      }
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+          if (xhr.status == 200) {
+            console.log(xhr.response)
+          } else {
+            console.log("响应出错，状态为：" + xhr.status + ",出错原因" + xhr.statusText);
+          }
+        }
+      }
+    }
+
+    function formateData(object) {
+      let arr = []
+      for (const key in object) {
+        arr.push(`${key}=${encodeURIComponent(object[key])}`)
+      }
+      return arr.join('&')
+    }
+    ajax({
+      method: "post",
+      url: "index1.php",
+      data: {
+        uname: "黑脸",
+        age: 18
+      }
+    })
+  </script>
+</body>
+
+</html>
