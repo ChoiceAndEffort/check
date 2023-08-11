@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写bind函数</title>
+</head>
+
+<body>
+    <script>
+
+        // 第一种写法,直接使用apply方法
+
+
+        // 返回一个函数
+        //函数传入两个值,第一个是改变的this指向,第二个传入的参数
+        Function.prototype.myBind = function (context, ...args) {
+            // console.log('传入的参数', args, this);
+            // console.log(Array.prototype.slice.call(arguments));
+            const fn = this
+            return (...innerArgs) => {
+                return fn.apply(context, args.concat(innerArgs))
+                // return fn.apply(context, Array.prototype.slice.call(arguments))
+            }
+
+        }
+        function greet(message) {
+            console.log(`${message}, ${this.name}!`, this);
+        }
+        const obj = {
+            name: 'Alice',
+        };
+        const boundGreet = greet.myBind(obj, 'Hello');
+        boundGreet()
+
+
+
+
+
+
+        // 第二种写法
+        Function.prototype.newBind1 = function () {
+            const _this = this;
+            const args = Array.prototype.slice.call(arguments);
+            const newThis = args.shift();
+            return () => {
+                return _this.newApply(newThis, args)
+            }
+        }
+
+        Function.prototype.newApply = function (context) {
+            context = context || window;
+            context.fn = this;
+            let result = arguments[1] ? context.fn(...arguments[1]) : context.fn()
+            return result
+        }
+
+        const boundGreet1 = greet.newBind1(obj, 'Hello-newBind1')//改变this指向的调用方法
+        boundGreet1()
+
+        greet.newApply(obj, [1, 2, 3])//改变this指向的调用方法
+
+        greet.apply(obj, [1, 2, 3])//改变this指向的调用方法
+
+        greet([1, 2, 3])//原始调用方法
+    </script>
+</body>
+
+</html>

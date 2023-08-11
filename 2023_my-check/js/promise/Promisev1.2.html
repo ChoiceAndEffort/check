@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+
+        const a = new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve(1)
+            }, 1000)
+        })
+        a.then(res => {
+            console.log(res, '打印结果');
+        })
+
+        const PENDING = 'pending';
+        const FUlFILLED = 'fulfilled';
+        const REJECTED = 'rejected';
+
+        //v1.1版本的Promise
+        class MyPromise {
+            //executor执行器
+            constructor(executor) {
+                this.status = PENDING;
+                this.value = undefined;
+                this.reason = undefined;
+                //+存放then成功，失败的回调的数组
+                this.onResolveCallbacks = [];
+                this.onRejectedCallbacks = [];
+
+                const resolve = (value) => {
+                    if (this.status === PENDING) {
+                        this.status = FUlFILLED;
+                        this.value = value;
+                        this.onResolveCallbacks.forEach(fn => fn());
+                    }
+                }
+
+                const reject = (reason) => {
+                    if (this.status === PENDING) {
+                        this.status = REJECTED;
+                        this.reason = reason;
+                        this.onRejectedCallbacks.forEach(fn => fn());
+                    }
+                }
+
+                try {
+                    executor(resolve, reject); //默认上执行器执行
+                } catch (error) {
+                    reject(error)
+                }
+            }
+            // then方法
+            then(onFulfilled, onRejected) {
+                //执行成功方法
+                if (this.status === FUlFILLED) {
+                    onFulfilled(this.value)
+                }
+
+                //执行失败方法
+                if (this.status === REJECTED) {
+                    onRejected(this.reason)
+                }
+
+                if (this.status === PENDING) {
+                    this.onResolveCallbacks.push(() => {
+                        onFulfilled(this.value)
+                    });
+                    this.onRejectedCallbacks.push(() => {
+                        onRejected(this.reason)
+                    })
+                }
+
+
+
+
+
+            }
+        }
+
+        const b = new MyPromise((resolve, reject) => {
+            //注意在v1.1版本加入了回调队列setTimeout中的resolve在这里才能打印出来
+            setTimeout(() => {
+                resolve(1)
+            }, 1000)
+        })
+
+        b.then(res => {
+            console.log(res, '自己实现的');
+        }, (err) => {
+            console.log(err, '报错了')
+        })
+    </script>
+</body>
+
+</html>

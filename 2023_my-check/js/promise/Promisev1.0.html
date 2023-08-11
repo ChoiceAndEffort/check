@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        const a = new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve(1);
+            }, 1000);
+        });
+        a.then((res) => {
+            console.log(res, '打印结果');
+        });
+
+        const PENDING = 'pending';
+        const FUlFILLED = 'fulfilled';
+        const REJECTED = 'rejected';
+
+        //v1.0版本的Promise
+        //三种状态 pending, fulfilled,rejected
+
+
+        //接收一个执行器函数,
+
+        //状态改变一:pending=>fulfilled;
+        //状态改变二:pending=>rejected;
+
+        //成功的时候有一个成功结果,value
+        //失败的时候有个错误的结果,reason
+
+        //还有一个then方法
+
+        class MyPromise {
+            //executor执行器
+            constructor(executor) {
+                this.status = PENDING;
+                this.value = undefined;
+                this.reason = undefined;
+                const resolve = (value) => {
+                    if (this.status === PENDING) {
+                        this.status = FUlFILLED;
+                        this.value = value;
+                    }
+                };
+                const reject = (reason) => {
+                    if (this.status === PENDING) {
+                        this.status = REJECTED;
+                        this.reason = reason;
+                    }
+                };
+
+                try {
+                    executor(resolve, reject); //默认上执行器执行
+                } catch (error) {
+                    reject(error);
+                }
+            }
+            // then方法
+            then(onFulfilled, onRejected) {
+                if (this.status === FUlFILLED) {
+                    onFulfilled(this.value);
+                }
+                if (this.status === REJECTED) {
+                    onRejected(this.reason);
+                }
+            }
+        }
+
+        const b = new MyPromise((resolve, reject) => {
+            //注意v1.0版本setTimeout中的resolve在这里打印不出来
+            resolve(1);
+        });
+
+        b.then(
+            (res) => {
+                console.log(res, '自己实现的');
+            },
+            (err) => {
+                console.log(err, '报错了');
+            }
+        );
+    </script>
+</body>
+
+</html>

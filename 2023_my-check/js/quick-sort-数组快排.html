@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        //1.传入一个数组
+
+        //2.数组从中间一分为二,取出中间值
+
+        //3. 将数组以中间值拆分成小于中间值的数组和大于中间值的数组
+
+        //4.分别对拆分后的数组进行递归排序
+
+        //5.边界条件处理: 数组长度≤1的时候直接赶回
+
+        function quickSort(arr) {
+            if (arr.length <= 1) return arr
+            let middleIndex = Math.floor(arr.length / 2)
+            let middleItem = arr.splice(middleIndex, 1)[0]
+            // console.log(middleIndex, middleItem);
+            let leftArr = []
+            let rightArr = []
+            for (const iterator of arr) {
+                if (iterator < middleItem) {
+                    leftArr.push(iterator)
+                } else {
+                    rightArr.push(iterator)
+                }
+            }
+
+            return quickSort(leftArr).concat(middleItem, quickSort(rightArr))
+
+        }
+        let arr = [1, 6, 3, 9, 2, 8, 7]
+        let arr1 = [1, 0, -1, 6, 3, 9, 2, 8, 7, -99]
+        let arr2 = [1]
+        console.log(quickSort(arr), '排序后的结果1');
+        console.log(quickSort(arr1), '排序后的结果2');
+        console.log(quickSort(arr2), '排序后的结果3');
+
+    </script>
+
+</body>
+
+</html>

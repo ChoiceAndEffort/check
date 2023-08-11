@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- https://juejin.cn/post/7020710294083092493 -->
+    <ul id="text"></ul>
+    <!-- <script>
+        // 整体script作为第一个宏任务进入主线程
+        // 先遇到setTimeout，那么将其回调函数注册后分发到宏任务Event Queue。(注册过程与上同，下文不再描述)
+        // 接下来遇到了Promise，new Promise立即执行，then函数分发到微任务Event Queue。
+
+
+        // js 部分
+        var divs = document.getElementById("text");
+
+        setTimeout(() => {
+            var big = document.createElement("li");
+            big.innerHTML = "我是setTimeout插入的内容";
+            divs.appendChild(big);
+        }, 0);
+
+        new Promise((resolve, reject) => {
+            resolve("我是Promise.then插入的内容");
+        }).then((msg) => {
+            var small = document.createElement("li");
+            small.innerHTML = msg;
+            divs.appendChild(small);
+        });
+
+
+    </script> -->
+    <script>
+
+        console.log('1');
+
+        setTimeout(function () {
+            console.log('2');
+            Process.nextTick(function () {
+                console.log('3');
+            })
+            new Promise(function (resolve) {
+                console.log('4');
+                resolve();
+            }).then(function () {
+                console.log('5')
+            })
+        })
+
+
+        Process.nextTick(function () {
+            console.log('6');
+        })
+
+
+        new Promise(function (resolve) {
+            console.log('7');
+            resolve();
+        }).then(function () {
+            console.log('8')
+        })
+
+
+
+
+
+        setTimeout(function () {
+            console.log('9');
+            Process.nextTick(function () {
+                console.log('10');
+            })
+            new Promise(function (resolve) {
+                console.log('11');
+                resolve();
+            }).then(function () {
+                console.log('12')
+            })
+        })
+//  1 ,7
+
+    </script>
+</body>
+
+</html>
