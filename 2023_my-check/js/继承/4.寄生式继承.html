@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>寄生式继承</title>
+</head>
+
+<body>
+    <script>
+        let parent = {
+            name: "父类名字",
+            sex: function () {
+                return '我有性别'
+            }
+        }
+
+        function clone(value) {
+            let clone = Object.create(value)
+            clone.getName = function () {
+                // console.log(this, 666);
+                return this.name
+            }
+            return clone
+        }
+        let person1 = clone(parent)
+        // parent.__proto__.age = 80
+        // console.log(parent.__proto__ === Object.prototype, 5555);
+        console.log(person1.age, person1.name, person1.sex(), person1.getName());
+
+    </script>
+    <div>
+        <!-- 优点:
+        <br />
+        1.简单灵活：寄生式继承相对于其他继承方式来说，实现起来比较简单。它不需要定义构造函数或使用类的语法，只需通过创建新对象并继承父对象的属性和方法来实现继承。
+        <br />
+        2. 可以扩展父对象：通过在新对象上添加额外的属性和方法，我们可以对父对象进行扩展，并满足特定的需求。这使得寄生式继承在一些特定场景下非常有用。
+        <br />
+        3. 可以避免引用类型的共享问题：与原型继承相比，寄生式继承在创建新对象时，不会直接将父对象的引用赋给子对象的原型。这意味着子对象可以避免修改原型时，影响到其他对象的问题。
+    </div> -->
+
+    <div>
+        缺点:
+        <br />
+        1.和借用构造函数继承类似，调用一次函数就得创建一遍方法，无法实现函数复用，效率较低。
+    </div>
+
+</body>
+
+</html>

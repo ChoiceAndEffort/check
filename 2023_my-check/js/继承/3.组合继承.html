@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>组合继承</title>
+</head>
+
+<body>
+    <script>
+        function Game(arg) {
+            this.name = arg;
+            this.skin = ['s'];
+            console.log(6666);
+        }
+        Game.prototype.getName = function () {
+            return this.name;
+        }
+
+        function LOL(arg) {
+            Game.call(this, arg);
+        }
+
+        LOL.prototype = new Game();
+        LOL.prototype.constructor = LOL;
+
+        const lol4 = new LOL('LOL1');
+        console.log(lol4, '组合继承');
+        console.log(lol4.getName(), '组合继承');
+
+
+    </script>
+    <div>
+        优点:
+        <br />
+        1. 解决了共享属性的问题<br />
+        2. 解决了子向父传参的问题
+        3. 解决了子可以继承父类原型上的属性和方法
+    </div>
+
+    <div>
+        缺点:
+        <br />
+        1.无论何种场景，都会调用两次父类的构造函数(一次是在LOL中调用,一次是在重写LOL.prototype的时候调用)<br />
+
+
+    </div>
+</body>
+
+</html>

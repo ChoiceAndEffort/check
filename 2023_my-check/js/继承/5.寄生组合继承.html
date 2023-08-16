@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>寄生组合继承</title>
+</head>
+
+<body>
+    <script>
+        //https://blog.csdn.net/dx18520548758/article/details/128618186
+        function Game(arg) {
+            this.name = 'lol';
+            this.skin = ['s'];
+        }
+        Game.prototype.getName = function () {
+            return this.name;
+        }
+        function LOL(arg) {
+            Game.call(this, arg);
+        }
+        LOL.prototype = Object.create(Game.prototype);
+        LOL.prototype.constructor = LOL;
+        const lol5 = new LOL('arg');
+        console.log(lol5.name, lol5.getName());
+    </script>
+    <div>
+        优点:
+        <br />
+        1. 解决了组合继承的调用两次的问题,只调用了一次超类构造函数，效率更高
+      
+    </div>
+
+    <div>
+        缺点:
+        <br />
+     
+    </div>
+
+
+</body>
+
+</html>

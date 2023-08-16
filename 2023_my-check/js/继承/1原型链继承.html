@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>原型链继承</title>
+</head>
+
+<body>
+    <script>
+        //父
+        function Game(name) {
+            this.name = name;
+            this.skin = ['s'];
+        }
+
+        Game.prototype.getName = function () {
+            return this.name;
+        }
+
+        //子
+        function LOL() { };
+
+
+        //重写了原型对象方式
+        LOL.prototype = new Game();
+
+        //重写构造函数
+        LOL.prototype.constructor = LOL;
+
+        // console.log(LOL.prototype.constructor.name, 'name-------');
+        // console.log(LOL.prototype.constructor.name, 'name----111---');
+
+        const lol1 = new LOL('李四');
+        const lol2 = new LOL('王五');
+
+        lol1.skin.push('ss');
+
+        const game1 = new Game('张三');
+
+
+        console.log(lol1, lol2, game1, '原型链继承的缺点');
+        console.log(lol1 === lol2);
+         // 本质：重写了原型对象方式，将父对象的属性方法，作为子对象原型对象的属性方法，同时重写构造函数
+
+
+    </script>
+    <div>
+        优点：
+        <br />
+        1.最简单的方式，将子类的原型指向父类的实例即可。
+
+
+    </div>
+    <div>
+
+        缺点:
+        <br />
+
+        1. 共享属性的问题,一个变化另外一个也变化:两个实例使用的是同一个原型对象。它们的内存空间是共享的，当一个发生变化的时候，另外一个也随之进行了变化(父类属性一旦赋值给到子类的原型属性，此时属性属于子类的共享属性了)
+        <br />
+        * 2. 无法向父类进行传参:实例化子类时，无法向父类进行传参(lol1和lol2中的name都是张三)
+
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>原型式继承(不推荐)</title>
+</head>
+
+<body>
+    <script>
+
+
+        function create(o) {
+            function F() { }
+            F.prototype = o
+            return new F()
+        }
+
+        let parent = {
+            gift: ['a', 'b']
+        }
+
+        let person1 = create(parent)
+        let person2 = create(parent)
+
+        person1.gift.push('c')
+
+        console.log(person1.gift, person2.gift);// ['a', 'b', 'c']
+        //缺点属性共享了
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>构造函数继承</title>
+</head>
+
+<body>
+    <script>
+        //父
+        function Game(name) {
+            this.name = name;
+            this.skin = ['s'];
+            this.fartherFn = function () {
+                // console.log("打印功能")
+                return '打印父类功能'
+            }
+            console.log(6666);
+        }
+        Game.prototype.fartherName = '大名'
+        Game.prototype.getName = function () {
+            return this.name;
+        }
+
+
+
+
+        //子
+        function LOL(arg) {
+            this.childName = '小名'
+            Game.call(this, arg);
+        };
+        const game1 = new Game('父类');
+
+        const lol3 = new LOL('子类1');
+        const lol4 = new LOL('子类2');
+        lol3.skin.push('ss');
+        console.log(game1, lol3, lol4, '实例对象');
+
+
+        console.log(game1.fartherName, game1.getName(), '父类原型上的属性和方法');
+
+        console.log(lol4.fartherName, '构造函数继承的缺点1');//undefined
+        console.log(lol3.getName(), '构造函数继承的缺点'); // 抛出错误： lol3.getName is not a function
+
+    </script>
+    <div>
+        优点:
+        <br />
+        1. 解决了共享属性问题<br />
+        2. 解决了子向父传参的问题
+    </div>
+
+    <div>
+        缺点:
+        <br />
+        1.只能继承父类的属性和方法，不能继承原型属性/方法(fartherName和getName无法继承)-- 。这意味着每个子类实例都会拥有自己的一份方法的副本，可能导致内存占用过大。<br />
+        无法实现多层继承：构造函数继承无法直接实现多层继承，即无法继承父类的父类的属性和方法。子类只能直接继承一个父类。
+        <br />
+        2.无法实现函数复用(每个lol实例中都调用Game)，每个子类都有父类实例函数的副本，影响性能(因此每次创建子类实例时都会调用构造函数、复制构造函数，会影响性能。);
+    </div>
+
+
+
+</body>
+
+</html>
