@@ -4,98 +4,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>相对完整版,后期继续优化</title>
 </head>
 
 <body>
     <script>
 
-        const a = new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve(1)
-            }, 1000)
-        })
-        a.then(res => {
-            console.log(res, '打印结果');
-        })
+        // 要传入resolve,reject
+        // 三种状态:pending,fulfilled,rejected
+        // 状态的改变:pending=>resolve(value)=>fulfilled,pending=>reject(reason)=>rejected,
+        // then方法,then方法可以返回Promise进行链式调用,
+        // 返回的promise中也要pending状态,将任务放到成功回调和失败回调中,
+        // 也要有成功状态执行成功函数,成功的函数要能拿到上次执行结果,判断结果是正常值,还是promise ,正常值直接resolve出去,如果是promise走then回调
+        // 同时要有失败回调,执行失败函数,判断结果是正常值,还是promise ,正常值直接reject出去,如果是promise走then回调
 
-        const PENDING = 'pending';
-        const FUlFILLED = 'fulfilled';
-        const REJECTED = 'rejected';
+        // 参考网址 http://www.dtmao.cc/ios/79186.html
 
-        //v1.1版本的Promise
-        class MyPromise {
-            //executor执行器
+        function resolvePromise(promise2, x, resolve, reject) {
+            if (x && x === promise2) {
+                // https://zhuanlan.zhihu.com/p/380573117
+                return reject(new TypeError('死循环了'))
+            }
+            if (x instanceof NewPromise) {
+                x.then(
+                    (value) => resolve(value),
+                    (reason) => reject(reason)
+                );
+            } else {
+                resolve(x);
+            }
+
+        }
+
+        class NewPromise {
             constructor(executor) {
-                this.status = PENDING;
-                this.value = undefined;
+                this.state = "pending"
                 this.reason = undefined;
-                //+存放then成功，失败的回调的数组
-                this.onResolveCallbacks = [];
-                this.onRejectedCallbacks = [];
-
+                this.result = undefined;
+                this.onFulfilledCallbacks = []
+                this.onRejectedCallbacks = []
                 const resolve = (value) => {
-                    if (this.status === PENDING) {
-                        this.status = FUlFILLED;
-                        this.value = value;
-                        this.onResolveCallbacks.forEach(fn => fn());
+                    if (this.state === 'pending') {
+                        this.state = 'fulfilled'
+                        this.result = value
+                        this.onFulfilledCallbacks.forEach(callback => callback())
                     }
                 }
-
                 const reject = (reason) => {
-                    if (this.status === PENDING) {
-                        this.status = REJECTED;
-                        this.reason = reason;
-                        this.onRejectedCallbacks.forEach(fn => fn());
+                    if (this.state === 'pending') {
+                        this.state = 'rejected'
+                        this.reason = reason
+                        this.onRejectedCallbacks.forEach(callback => callback())
                     }
                 }
-
                 try {
-                    executor(resolve, reject); //默认上执行器执行
+                    executor(resolve, reject)
                 } catch (error) {
                     reject(error)
                 }
             }
-            // then方法
             then(onFulfilled, onRejected) {
-                //执行成功方法
-                if (this.status === FUlFILLED) {
-                    onFulfilled(this.value)
-                }
+                onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : (value) => value
+                onRejected = typeof onRejected === 'function' ? onRejected : (error) => { throw error }
 
-                //执行失败方法
-                if (this.status === REJECTED) {
-                    onRejected(this.reason)
-                }
+                const promise2 = new NewPromise((resolve, reject) => {
+                    const handleFulfilled = () => {
+                        setTimeout(() => {
+                            const x = onFulfilled(this.result)
+                            resolvePromise(promise2, x, resolve, reject)
+                        }, 0)
+                    }
+                    const handleRejected = () => {
+                        setTimeout(() => {
+                            const x = onFulfilled(this.result)
+                            resolvePromise(promise2, x, resolve, reject)
+                        }, 0)
+                    }
 
-                if (this.status === PENDING) {
-                    this.onResolveCallbacks.push(() => {
-                        onFulfilled(this.value)
-                    });
-                    this.onRejectedCallbacks.push(() => {
-                        onRejected(this.reason)
-                    })
-                }
+                    if (this.state === 'fulfilled') {
+                        handleFulfilled()
+                    }
+                    if (this.state === 'rejected') {
+                        handleRejected()
+                    }
+                    if (this.state === 'pending') {
+                        this.onFulfilledCallbacks.push(handleFulfilled)
+                        this.onRejectedCallbacks.push(handleRejected)
 
+                    }
+                })
+                //promise2 可以是一个值,相当于只有一层then
+                //promise2 可以是一个promise,这样可以多层then
+                return promise2
+            }
+            catch(onRejected) {
+                return this.then(null, onRejected);
+            }
+            //https://www.jianshu.com/p/5119e01a036f
+            finally(onFinished) {
+                return this.then(val => {
+                    onFinished()
+                    return val
 
+                }).catch((err) => {
+                    onFinished()
+                    return err
+
+                })
 
 
 
             }
-        }
+            static resolve(value) {
+                return new NewPromise((resolve) => {
+                    resolve(value);
+                });
+            }
+            // reject需要在完善
+            // static reject(reason) {
+            //     return new NewPromise((resolve, reject) => {
+            //         reject(reason);
+            //     });
+            // }
 
-        const b = new MyPromise((resolve, reject) => {
-            //注意在v1.1版本加入了回调队列setTimeout中的resolve在这里才能打印出来
+        }
+        let p = new NewPromise((resolve, reject) => {
             setTimeout(() => {
                 resolve(1)
             }, 1000)
         })
-
-        b.then(res => {
-            console.log(res, '自己实现的');
-        }, (err) => {
-            console.log(err, '报错了')
+        p.then((res) => {
+            console.log(res, 555555555);
+        }).finally(() => {
+            console.log('执行结束---66666666666');
         })
+
+        NewPromise.resolve(5555).then(res => {
+            console.log(res, 7777);
+        })
+        // NewPromise.reject(8888).then(res => {
+        //     console.log(res, 8111);
+        // }, err => {
+        //     console.log(err, 888);
+        // }).catch(err => {
+        //     console.log(err, 9999);
+        // })
+
+
+
+        console.log('自己创建的0', NewPromise.resolve);
+
+        //买笔
+        function buy() {
+            console.log("开始买笔");
+            var p = new NewPromise(function (resolve, reject) {
+                setTimeout(function () {
+                    console.log("买了笔芯");
+                    resolve("数学作业");
+                }, 1000);
+            });
+            return p;
+        }
+        //写作业
+        function work(data) {
+            console.log("开始写作业：" + data);
+            var p = new NewPromise(function (resolve, reject) {
+                setTimeout(function () {
+                    console.log("写完作业");
+                    resolve("作业本");
+                }, 1000);
+            });
+            return p;
+        }
+
+        function out(data) {
+            console.log("开始上交：" + data);
+            var p = new NewPromise(function (resolve, reject) {
+                setTimeout(function () {
+                    console.log("上交完毕");
+                    resolve("得分：A");
+                }, 1000);
+            });
+            return p;
+        }
+        //推荐这种简化的写法
+        buy().
+            then(work).
+            then(out)
+            .then(function (data) {
+                console.log(data);
+            }).finally((val) => {
+                console.log('执行完了----');
+            })
+
     </script>
 </body>
 
